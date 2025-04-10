@@ -1,5 +1,6 @@
 import cv2 as cv
 import pyautogui as pg
+from pynput import keyboard
 import numpy as np
 import os
 import time
@@ -13,7 +14,7 @@ def take_screenshot(dim):
 
     screenshot = pg.screenshot()
     # screenshot.save("screenshot.png")
-    screenshot = cv.imread("screenshot.png")
+    # screenshot = cv.imread("screenshot.png")
 
     # Load the screenshot using OpenCV
     screenshot = np.array(screenshot)
@@ -27,44 +28,62 @@ def take_screenshot(dim):
 
     # Save the cropped image
     return img
-    
 
     # cv.imshow("Cropped Image", img)
     # cv.waitKey(0)
     # cv.destroyAllWindows()
 
+
+space_pressed = False
+
+
+def on_press(key):
+    global space_pressed
+    try:
+        if key == keyboard.Key.space:
+            space_pressed = True
+    except AttributeError:
+        pass
+
+
+def on_release(key):
+    global space_pressed
+    if key == keyboard.Key.space:
+        space_pressed = False
+
+
 def main():
     path = "data"
     sequence_num = len(os.listdir(path))
-    
+
     dirpath = f"{path}/sequence_{sequence_num}"
-    os.mkdir(dirpath, exist_ok=True)
-    i= 0
-    space_bar_pressed = False  # Keep track of the spacebar's state
+    os.mkdir(dirpath)
+    i = 0
 
     while True:
-        current_space_state = pg.keyDown("SPACE")
-
-        if current_space_state and not space_bar_pressed:
+        if space_pressed:
+            print("space pressed")
             # Spacebar was just pressed down
             i += 1
-            print(f"Capturing frame {i}") # Optional feedback
+            print(f"Capturing frame {i}")  # Optional feedback
             player = take_screenshot(player_dim)
             cv.imwrite(f"{dirpath}/player_{i}.png", player)
             opponent = take_screenshot(opponent_dim)
             cv.imwrite(f"{dirpath}/opponent_{i}.png", opponent)
-            space_bar_pressed = True  # Update the state
-
-        elif not current_space_state:
-            # Spacebar is not currently pressed
-            space_bar_pressed = False  # Reset the state
-
-        time.sleep(0.05) # Small delay to avoid rapid checks
+            enter_bar_pressed = True  # Update the state
+        time.sleep(.05)
 
 
+listener = keyboard.Listener(
+    on_press=on_press,
+    on_release=on_release
+)
 
-take_screenshot(opponent_dim)
-
+if __name__ == '__main__':
+    listener.start()
+    main()
+    listener.stop()
+    listener.join()
 # when space is pressed, means new card picks
 
 """
