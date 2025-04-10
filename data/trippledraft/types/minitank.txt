@@ -1,0 +1,10 @@
+knight
+valkyrie
+ice golem
+miner
+rascals
+princess
+fisherman
+battle Healer
+dark prince
+royal ghost

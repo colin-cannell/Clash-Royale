@@ -1,0 +1,6 @@
+fireball
+lightning
+poison
+rocket
+earth quake
+freeze
