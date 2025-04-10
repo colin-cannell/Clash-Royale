@@ -1,6 +1,7 @@
 import cv2 as cv
 import pyautogui as pg
 import numpy as np
+import os
 
 player_dim = (0, 600, 450, 625)
 opponent_dim = (0, 600, 225, 325)
@@ -22,16 +23,31 @@ def take_screenshot(dim):
     else:
         x1, x2 = dim
         img = img[:, x1:x2]
-    cv.imshow("Cropped Image", img)
-    cv.waitKey(0)
-    cv.destroyAllWindows()
 
+    # Save the cropped image
+    return img
+    
+
+    # cv.imshow("Cropped Image", img)
+    # cv.waitKey(0)
+    # cv.destroyAllWindows()
 
 def main():
+    path = "data"
+    sequence_num = len(os.listdir(path))
+    
+    dirpath = f"{path}/sequence_{sequence_num}"
+    os.mkdir(dirpath, exist_ok=True)
+    i= 0
     while True:
         if pg.keyDown("SPACE"):
-            take_screenshot(player_dim)
-            take_screenshot(opponent_dim)
+            i += 1
+            player = take_screenshot(player_dim)
+            cv.imwrite(f"{dirpath}/player_{i}.png", player)
+            opponent = take_screenshot(opponent_dim)
+            cv.imwrite(f"{dirpath}/opponent_{i}.png", opponent)
+
+
 
 take_screenshot(opponent_dim)
 
