@@ -2,6 +2,7 @@ import cv2 as cv
 import pyautogui as pg
 import numpy as np
 import os
+import time
 
 player_dim = (0, 600, 450, 625)
 opponent_dim = (0, 600, 225, 325)
@@ -39,13 +40,26 @@ def main():
     dirpath = f"{path}/sequence_{sequence_num}"
     os.mkdir(dirpath, exist_ok=True)
     i= 0
+    space_bar_pressed = False  # Keep track of the spacebar's state
+
     while True:
-        if pg.keyDown("SPACE"):
+        current_space_state = pg.keyDown("SPACE")
+
+        if current_space_state and not space_bar_pressed:
+            # Spacebar was just pressed down
             i += 1
+            print(f"Capturing frame {i}") # Optional feedback
             player = take_screenshot(player_dim)
             cv.imwrite(f"{dirpath}/player_{i}.png", player)
             opponent = take_screenshot(opponent_dim)
             cv.imwrite(f"{dirpath}/opponent_{i}.png", opponent)
+            space_bar_pressed = True  # Update the state
+
+        elif not current_space_state:
+            # Spacebar is not currently pressed
+            space_bar_pressed = False  # Reset the state
+
+        time.sleep(0.05) # Small delay to avoid rapid checks
 
 
 
